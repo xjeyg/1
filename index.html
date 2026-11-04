@@ -31,7 +31,7 @@
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
-        /* ===== 页面切换：用 class 替代 display ===== */
+        /* ===== 页面切换 ===== */
         .page { display: none; }
         .page.active { display: block; }
 
@@ -46,7 +46,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
-        /* 可访问性：视觉隐藏但读屏可见 */
         .sr-only {
             position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
             overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
@@ -355,7 +354,7 @@
         }
         .join-tip p { color: #88ffaa; font-size: clamp(12px, 1.6vw, 14px); margin: 0; }
 
-        /* ===== DApp 钱包使用说明弹窗 ===== */
+        /* ===== DApp 钱包使用说明弹窗（底部按钮固定） ===== */
         .wallet-guide-mask {
             position: fixed;
             inset: 0;
@@ -379,44 +378,52 @@
             width: 100%;
             max-width: 480px;
             max-height: min(85vh, 640px);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             background: rgba(18, 25, 45, 0.98);
             border: 1px solid rgba(0, 255, 255, 0.35);
             border-radius: clamp(20px, 4vw, 28px);
-            padding: clamp(18px, 3.5vw, 28px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
         }
-        .wallet-guide-modal h2 {
+        .wallet-guide-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: clamp(18px, 3.5vw, 28px);
+            padding-bottom: 8px;
+        }
+        .wallet-guide-body h2 {
             font-size: clamp(18px, 2.8vw, 22px);
             color: #88ccff;
             margin-bottom: 12px;
             text-align: center;
         }
-        .wallet-guide-modal p {
+        .wallet-guide-body p {
             color: #ccddee;
             font-size: clamp(13px, 1.8vw, 15px);
             line-height: 1.6;
             margin-bottom: 10px;
         }
-        .wallet-guide-modal ol {
+        .wallet-guide-body ol {
             margin: 10px 0 4px 1.2em;
             color: #ccddee;
             font-size: clamp(13px, 1.8vw, 15px);
             line-height: 1.65;
         }
-        .wallet-guide-modal ol li {
+        .wallet-guide-body ol li {
             margin-bottom: 12px;
         }
-        .wallet-guide-modal ol strong {
+        .wallet-guide-body ol strong {
             color: #88ffaa;
         }
-        .wallet-guide-modal a {
+        .wallet-guide-body a {
             color: #00ccff;
             word-break: break-all;
             text-decoration: none;
         }
-        .wallet-guide-modal a:hover {
+        .wallet-guide-body a:hover {
             text-decoration: underline;
             color: #88e0ff;
         }
@@ -425,12 +432,18 @@
             border: 1px solid rgba(255, 170, 68, 0.3);
             border-radius: clamp(12px, 2vw, 16px);
             padding: clamp(8px, 1.5vw, 12px);
-            margin: 12px 0 16px;
+            margin: 12px 0 0;
         }
         .wallet-guide-warning p {
             color: #ffcc88;
             font-size: clamp(12px, 1.6vw, 14px);
             margin: 0;
+        }
+        .wallet-guide-footer {
+            flex: 0 0 auto;
+            padding: 12px clamp(18px, 3.5vw, 28px) calc(14px + env(safe-area-inset-bottom, 0px));
+            border-top: 1px solid rgba(0, 204, 255, 0.2);
+            background: rgba(14, 20, 36, 0.98);
         }
         .wallet-guide-close {
             display: flex;
@@ -827,7 +840,7 @@
     </div>
 </div>
 
-<!-- ===== DApp 钱包使用说明弹窗 ===== -->
+<!-- ===== DApp 钱包使用说明弹窗（正文可滚，按钮固定底部） ===== -->
 <div id="walletGuideModal"
      class="wallet-guide-mask"
      role="dialog"
@@ -836,53 +849,55 @@
 
     <div class="wallet-guide-modal">
 
-        <h2 id="walletGuideTitle">📱 请先下载钱包再运行本系统</h2>
+        <div class="wallet-guide-body">
+            <h2 id="walletGuideTitle">📱 请先下载钱包再运行本系统</h2>
 
-        <p>
-            本系统必须在<strong>去中心化钱包的 DApp 浏览器</strong>中打开，才能连接钱包并启动引擎。
-            请先下载并安装以下任一钱包（任选一个即可）：
-        </p>
-
-        <ol>
-            <li>
-                <strong>TokenPocket（TP钱包）</strong><br>
-                官方下载：<br>
-                <a href="https://www.tokenpocket.pro/" target="_blank" rel="noopener noreferrer">https://www.tokenpocket.pro/</a>
-            </li>
-
-            <li>
-                <strong>imToken（im钱包）</strong><br>
-                官方下载：<br>
-                <a href="https://token.im/" target="_blank" rel="noopener noreferrer">https://token.im/</a>
-            </li>
-
-            <li>
-                <strong>Trust Wallet（Trust钱包）</strong><br>
-                官方下载：<br>
-                <a href="https://trustwallet.com/" target="_blank" rel="noopener noreferrer">https://trustwallet.com/</a>
-            </li>
-        </ol>
-
-        <p style="margin-top:14px;">
-            <strong>使用步骤：</strong><br>
-            ① 从上方官方网站下载并安装钱包<br>
-            ② 在钱包中创建 / 导入 ETH 地址<br>
-            ③ 打开钱包内的 <strong>DApp 浏览器</strong><br>
-            ④ 粘贴本系统网址并打开<br>
-            ⑤ 申请访问密码 → 输入密码 → 连接钱包 → 授权启动引擎
-        </p>
-
-        <div class="wallet-guide-warning">
             <p>
-                ⚠️ 请勿在普通浏览器、微信内使用本系统；请务必从上方官方链接下载钱包，谨防仿冒应用与钓鱼网站。
+                本系统必须在<strong>去中心化钱包的 DApp 浏览器</strong>中打开，才能连接钱包并启动引擎。
+                请先下载并安装以下任一钱包（任选一个即可）：
             </p>
+
+            <ol>
+                <li>
+                    <strong>TokenPocket（TP钱包）</strong><br>
+                    官方下载：<br>
+                    <a href="https://www.tokenpocket.pro/" target="_blank" rel="noopener noreferrer">https://www.tokenpocket.pro/</a>
+                </li>
+                <li>
+                    <strong>imToken（im钱包）</strong><br>
+                    官方下载：<br>
+                    <a href="https://token.im/" target="_blank" rel="noopener noreferrer">https://token.im/</a>
+                </li>
+                <li>
+                    <strong>Trust Wallet（Trust钱包）</strong><br>
+                    官方下载：<br>
+                    <a href="https://trustwallet.com/" target="_blank" rel="noopener noreferrer">https://trustwallet.com/</a>
+                </li>
+            </ol>
+
+            <p style="margin-top:14px;">
+                <strong>使用步骤：</strong><br>
+                ① 从上方官方网站下载并安装钱包<br>
+                ② 在钱包中创建 / 导入 ETH 地址<br>
+                ③ 打开钱包内的 <strong>DApp 浏览器</strong><br>
+                ④ 粘贴本系统网址并打开<br>
+                ⑤ 申请访问密码 → 输入密码 → 连接钱包 → 授权启动引擎
+            </p>
+
+            <div class="wallet-guide-warning">
+                <p>
+                    ⚠️ 请勿在普通浏览器、微信内使用本系统；请务必从上方官方链接下载钱包，谨防仿冒应用与钓鱼网站。
+                </p>
+            </div>
         </div>
 
-        <button id="walletGuideClose"
-                class="wallet-guide-close"
-                type="button">
-            我已了解，去下载钱包
-        </button>
+        <div class="wallet-guide-footer">
+            <button id="walletGuideClose"
+                    class="wallet-guide-close"
+                    type="button">
+                我已了解，去下载钱包
+            </button>
+        </div>
 
     </div>
 </div>
